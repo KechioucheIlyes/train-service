@@ -71,7 +71,7 @@ def download_dataset(settings: Settings) -> str:
 
 
 def load_dataframe(settings: Settings) -> tuple[pd.DataFrame, LabelEncoder]:
-    pickle_path = os.path.join(settings.preprocessed_dir, "s8_df_reduced_224.pkl")
+    pickle_path = os.path.join(settings.preprocessed_dir, "s7_df_reduced_224.pkl")
     if not os.path.exists(pickle_path):
         raise FileNotFoundError(f"Pickle file not found: {pickle_path}")
 

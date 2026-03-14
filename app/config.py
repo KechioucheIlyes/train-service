@@ -56,7 +56,7 @@ def get_settings() -> Settings:
         output_dir=_get_env("OUTPUT_DIR", "./outputs"),
         model_dir=_get_env("MODEL_DIR", "./outputs/models"),
         plots_dir=_get_env("PLOTS_DIR", "./outputs/plots"),
-        run_name=_get_env("RUN_NAME", "shifaa_s8_run"),
+        run_name=_get_env("RUN_NAME", "shifaa_s7_run"),
         batch_size=int(_get_env("BATCH_SIZE", "32")),
         epochs=int(_get_env("EPOCHS", "20")),
         learning_rate=float(_get_env("LEARNING_RATE", "0.0001")),
