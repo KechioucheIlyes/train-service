@@ -139,7 +139,6 @@ scikit-learn==1.8.0
 scipy==1.17.1
 seaborn==0.13.2
 sentence-transformers==3.4.1
-setuptools==82.0.1
 shellingham==1.5.4
 shifaa==0.1.0
 six==1.17.0

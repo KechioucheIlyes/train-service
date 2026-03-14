@@ -33,41 +33,50 @@ def setup_kaggle_credentials(settings: Settings) -> None:
 def download_dataset(settings: Settings) -> str:
     ensure_dirs([settings.data_dir, settings.preprocessed_dir])
 
-    archive_path = os.path.join(settings.data_dir, "dataset.zip")
+    pickle_path = os.path.join(settings.preprocessed_dir, "s7_df_reduced_224.pkl")
+    if os.path.exists(pickle_path):
+        print(f"Dataset déjà extrait, {pickle_path}")
+        return ""
 
-    command = [
-        "kaggle",
-        "datasets",
-        "download",
-        "-d",
-        settings.dataset_slug,
-        "-p",
-        settings.data_dir,
-        "-o",
-    ]
-    subprocess.run(command, check=True)
+    expected_zip_name = f"{settings.dataset_slug.split('/')[-1]}.zip"
+    archive_path = os.path.join(settings.data_dir, expected_zip_name)
 
-    downloaded_files = list(Path(settings.data_dir).glob("*.zip"))
-    if not downloaded_files:
-        raise FileNotFoundError("No dataset zip file found after Kaggle download.")
+    if not os.path.exists(archive_path):
+        print("Téléchargement du dataset Kaggle...")
+        command = [
+            "kaggle",
+            "datasets",
+            "download",
+            "-d",
+            settings.dataset_slug,
+            "-p",
+            settings.data_dir,
+            "-o",
+        ]
+        subprocess.run(command, check=True)
+    else:
+        print(f"Archive déjà présente : {archive_path}")
 
-    latest_zip = max(downloaded_files, key=lambda p: p.stat().st_mtime)
+    if not os.path.exists(archive_path):
+        downloaded_files = list(Path(settings.data_dir).glob("*.zip"))
+        if not downloaded_files:
+            raise FileNotFoundError("No dataset zip file found after Kaggle download.")
+        latest_zip = max(downloaded_files, key=lambda p: p.stat().st_mtime)
+        archive_path = str(latest_zip)
 
-    if os.path.exists(settings.preprocessed_dir):
-        shutil.rmtree(settings.preprocessed_dir)
 
     Path(settings.preprocessed_dir).mkdir(parents=True, exist_ok=True)
 
     unzip_command = [
         "unzip",
         "-q",
-        str(latest_zip),
+        archive_path,
         "-d",
         settings.preprocessed_dir,
     ]
     subprocess.run(unzip_command, check=True)
 
-    return str(latest_zip)
+    return archive_path
 
 
 def load_dataframe(settings: Settings) -> tuple[pd.DataFrame, LabelEncoder]:
@@ -119,7 +128,13 @@ def compute_class_weights_dict(df_train: pd.DataFrame) -> dict[int, float]:
 
 def prepare_data(settings: Settings):
     setup_kaggle_credentials(settings)
-    download_dataset(settings)
+
+    pickle_path = os.path.join(settings.preprocessed_dir, "s7_df_reduced_224.pkl")
+    if not os.path.exists(pickle_path):
+        download_dataset(settings)
+    else:
+        print(f"Pickle déjà disponible : {pickle_path}")
+
     df, label_encoder = load_dataframe(settings)
     df_train, df_val, df_test = split_dataframe(df, settings.random_state)
     class_weights = compute_class_weights_dict(df_train)
