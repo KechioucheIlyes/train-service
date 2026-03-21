@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
 
-WORKDIR /workspace
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -13,14 +13,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /workspace/requirements.txt
+COPY requirements.txt /app/requirements.txt
 
 RUN pip install --upgrade pip && \
-    pip install -r /workspace/requirements.txt
+    pip install -r /app/requirements.txt
 
-COPY app /workspace/app
-COPY entrypoint.sh /workspace/entrypoint.sh
+COPY app /app/app
+COPY entrypoint.sh /app/entrypoint.sh
 
-RUN chmod +x /workspace/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-CMD ["/workspace/entrypoint.sh"]
+CMD ["/app/entrypoint.sh"]
