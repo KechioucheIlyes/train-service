@@ -146,6 +146,8 @@ def main():
     print(f"F1-Score  : {evaluation_output['f1']*100:.2f}%")
     print(f"Modèle final : {training_output['final_model_full_path']}")
     print(f"Résultats    : {evaluation_output['results_path']}")
+    
+    
 
 
 if __name__ == "__main__":
